@@ -2889,8 +2889,6 @@ find_primary_gpu(struct drm_backend *b, const char *seat)
 		if (!device_seat)
 			device_seat = default_seat;
 
-			udev_device_unref(device);
-
 	}
 
 	udev_enumerate_unref(e);
