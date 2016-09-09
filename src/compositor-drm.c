@@ -3202,7 +3202,7 @@ drm_backend_create(struct weston_compositor *compositor,
 		weston_log("failed to create output for %s\n", path);
 		goto err_udev_input;
 	}
-
+		weston_log("fawofvsqpfqsfsqfsqces\n");
 	/* A this point we have some idea of whether or not we have a working
 	 * cursor plane. */
 	if (!b->cursors_are_broken)
@@ -3211,6 +3211,7 @@ drm_backend_create(struct weston_compositor *compositor,
 	path = NULL;
 
 	loop = wl_display_get_event_loop(compositor->wl_display);
+		weston_log("ikqsiopifpqsofoqate input devices\n");
 	b->drm_source =
 		wl_event_loop_add_fd(loop, b->drm.fd,
 				     WL_EVENT_READABLE, on_drm_input, b);
@@ -3220,6 +3221,7 @@ drm_backend_create(struct weston_compositor *compositor,
 		weston_log("failed to intialize udev monitor\n");
 		goto err_drm_source;
 	}
+		weston_log("squsqhnfouqsfoquspqsofoqate input devices\n");
 	udev_monitor_filter_add_match_subsystem_devtype(b->udev_monitor,
 							"drm", NULL);
 	b->udev_drm_source =
