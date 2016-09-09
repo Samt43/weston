@@ -2888,30 +2888,9 @@ find_primary_gpu(struct drm_backend *b, const char *seat)
 		device_seat = udev_device_get_property_value(device, "ID_SEAT");
 		if (!device_seat)
 			device_seat = default_seat;
-		if (strcmp(device_seat, seat)) {
-			udev_device_unref(device);
-			continue;
-		}
 
-		pci = udev_device_get_parent_with_subsystem_devtype(device,
-								"pci", NULL);
-		if (pci) {
-			id = udev_device_get_sysattr_value(pci, "boot_vga");
-			if (id && !strcmp(id, "1")) {
-				if (drm_device)
-					udev_device_unref(drm_device);
-				drm_device = device;
-				break;
-			}
-		} else {
-			id = udev_device_get_sysname(device);
-			if (!strcmp(id, "card0"))
-				drm_device = device;
-			else if (!strcmp(id, "card1"))
-				b->gbm.filename = strdup(udev_device_get_devnode(device));
-			else
-				udev_device_unref(device);
-		}
+			udev_device_unref(device);
+
 	}
 
 	udev_enumerate_unref(e);
