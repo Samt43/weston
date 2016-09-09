@@ -263,7 +263,7 @@ udev_input_enable(struct udev_input *input)
 			"\t- seats misconfigured "
 			"(Weston backend option 'seat', "
 			"udev device property ID_SEAT)\n");
-		return -1;
+
 	}
 
 	return 0;
