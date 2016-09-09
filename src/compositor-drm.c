@@ -2905,9 +2905,9 @@ find_primary_gpu(struct drm_backend *b, const char *seat)
 			}
 		} else {
 			id = udev_device_get_sysname(device);
-			if (!strcmp(id, "card0"))
+			if (!strcmp(id, "card1"))
 				drm_device = device;
-			else if (!strcmp(id, "card1"))
+			else if (!strcmp(id, "card0"))
 				b->gbm.filename = strdup(udev_device_get_devnode(device));
 			else
 				udev_device_unref(device);
