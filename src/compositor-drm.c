@@ -2888,7 +2888,30 @@ find_primary_gpu(struct drm_backend *b, const char *seat)
 		device_seat = udev_device_get_property_value(device, "ID_SEAT");
 		if (!device_seat)
 			device_seat = default_seat;
+		if (strcmp(device_seat, seat)) {
+			udev_device_unref(device);
+			continue;
+		}
 
+		pci = udev_device_get_parent_with_subsystem_devtype(device,
+								"pci", NULL);
+		if (pci) {
+			id = udev_device_get_sysattr_value(pci, "boot_vga");
+			if (id && !strcmp(id, "1")) {
+				if (drm_device)
+					udev_device_unref(drm_device);
+				drm_device = device;
+				break;
+			}
+		} else {
+			id = udev_device_get_sysname(device);
+			if (!strcmp(id, "card0"))
+				drm_device = device;
+			else if (!strcmp(id, "card1"))
+				b->gbm.filename = strdup(udev_device_get_devnode(device));
+			else
+				udev_device_unref(device);
+		}
 	}
 
 	udev_enumerate_unref(e);
@@ -3137,8 +3160,11 @@ drm_backend_create(struct weston_compositor *compositor,
 	wl_signal_add(&compositor->session_signal, &b->session_listener);
 
 	drm_device = find_primary_gpu(b, seat_id);
-
-	path = "/sys/class/drm/card1";
+	if (drm_device == NULL) {
+		weston_log("no drm device found\n");
+		goto err_udev;
+	}
+	path = udev_device_get_syspath(drm_device);
 
 	if (init_drm(b, drm_device) < 0) {
 		weston_log("failed to initialize kms\n");
@@ -3170,13 +3196,14 @@ drm_backend_create(struct weston_compositor *compositor,
 	if (udev_input_init(&b->input,
 			    compositor, b->udev, seat_id) < 0) {
 		weston_log("failed to create input devices\n");
+		goto err_udev_input;
 	}
 
 	if (create_outputs(b, config->connector, drm_device) < 0) {
 		weston_log("failed to create output for %s\n", path);
 		goto err_udev_input;
 	}
-		weston_log("fawofvsqpfqsfsqfsqces\n");
+
 	/* A this point we have some idea of whether or not we have a working
 	 * cursor plane. */
 	if (!b->cursors_are_broken)
@@ -3185,7 +3212,6 @@ drm_backend_create(struct weston_compositor *compositor,
 	path = NULL;
 
 	loop = wl_display_get_event_loop(compositor->wl_display);
-		weston_log("ikqsiopifpqsofoqate input devices\n");
 	b->drm_source =
 		wl_event_loop_add_fd(loop, b->drm.fd,
 				     WL_EVENT_READABLE, on_drm_input, b);
@@ -3195,7 +3221,6 @@ drm_backend_create(struct weston_compositor *compositor,
 		weston_log("failed to intialize udev monitor\n");
 		goto err_drm_source;
 	}
-		weston_log("squsqhnfouqsfoquspqsofoqate input devices\n");
 	udev_monitor_filter_add_match_subsystem_devtype(b->udev_monitor,
 							"drm", NULL);
 	b->udev_drm_source =
