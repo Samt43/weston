@@ -3137,11 +3137,8 @@ drm_backend_create(struct weston_compositor *compositor,
 	wl_signal_add(&compositor->session_signal, &b->session_listener);
 
 	drm_device = find_primary_gpu(b, seat_id);
-	if (drm_device == NULL) {
-		weston_log("no drm device found\n");
-		goto err_udev;
-	}
-	path = udev_device_get_syspath(drm_device);
+
+	path = "/sys/class/drm/card1";
 
 	if (init_drm(b, drm_device) < 0) {
 		weston_log("failed to initialize kms\n");
