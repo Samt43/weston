@@ -2875,7 +2875,7 @@ find_primary_gpu(struct drm_backend *b, const char *seat)
 
 	e = udev_enumerate_new(b->udev);
 	udev_enumerate_add_match_subsystem(e, "drm");
-	udev_enumerate_add_match_sysname(e, "card[1-9]*");
+	udev_enumerate_add_match_sysname(e, "card[0-9]*");
 
 	udev_enumerate_scan_devices(e);
 	drm_device = NULL;
