@@ -2875,7 +2875,7 @@ find_primary_gpu(struct drm_backend *b, const char *seat)
 
 	e = udev_enumerate_new(b->udev);
 	udev_enumerate_add_match_subsystem(e, "drm");
-	udev_enumerate_add_match_sysname(e, "card[0-9]*");
+	udev_enumerate_add_match_sysname(e, "card[1-9]*");
 
 	udev_enumerate_scan_devices(e);
 	drm_device = NULL;
@@ -2905,9 +2905,9 @@ find_primary_gpu(struct drm_backend *b, const char *seat)
 			}
 		} else {
 			id = udev_device_get_sysname(device);
-			if (!strcmp(id, "card0"))
+			if (!strcmp(id, "card1"))
 				drm_device = device;
-			else if (!strcmp(id, "card1"))
+			else if (!strcmp(id, "card0"))
 				b->gbm.filename = strdup(udev_device_get_devnode(device));
 			else
 				udev_device_unref(device);
@@ -3196,7 +3196,7 @@ drm_backend_create(struct weston_compositor *compositor,
 	if (udev_input_init(&b->input,
 			    compositor, b->udev, seat_id) < 0) {
 		weston_log("failed to create input devices\n");
-		goto err_sprite;
+		goto err_udev_input;
 	}
 
 	if (create_outputs(b, config->connector, drm_device) < 0) {
