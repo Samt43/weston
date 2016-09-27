@@ -673,6 +673,7 @@ drm_output_set_gamma(struct weston_output *output_base,
 static unsigned int
 drm_waitvblank_pipe(struct drm_output *output)
 {
+     weston_log("drm_waitvblank_pipe");
 	if (output->pipe > 1)
 		return (output->pipe << DRM_VBLANK_HIGH_CRTC_SHIFT) &
 				DRM_VBLANK_HIGH_CRTC_MASK;
@@ -686,6 +687,7 @@ static int
 drm_output_repaint(struct weston_output *output_base,
 		   pixman_region32_t *damage)
 {
+         weston_log("drm_output_repaint");
 	struct drm_output *output = (struct drm_output *) output_base;
 	struct drm_backend *backend =
 		(struct drm_backend *)output->base.compositor->backend;
@@ -785,6 +787,7 @@ err_pageflip:
 static void
 drm_output_start_repaint_loop(struct weston_output *output_base)
 {
+     weston_log("drm_output_start_repaint_loop");
 	struct drm_output *output = (struct drm_output *) output_base;
 	struct drm_backend *backend = (struct drm_backend *)
 		output_base->compositor->backend;
@@ -856,6 +859,7 @@ finish_frame:
 static void
 drm_output_update_msc(struct drm_output *output, unsigned int seq)
 {
+         weston_log("drm_output_update_msc");
 	uint64_t msc_hi = output->base.msc >> 32;
 
 	if (seq < (output->base.msc & 0xffffffff))
@@ -868,6 +872,7 @@ static void
 vblank_handler(int fd, unsigned int frame, unsigned int sec, unsigned int usec,
 	       void *data)
 {
+                weston_log("vblank_handler");
 	struct drm_sprite *s = (struct drm_sprite *)data;
 	struct drm_output *output = s->output;
 	struct timespec ts;
@@ -895,6 +900,7 @@ static void
 page_flip_handler(int fd, unsigned int frame,
 		  unsigned int sec, unsigned int usec, void *data)
 {
+    weston_log("page_flip_handler1");
 	struct drm_output *output = (struct drm_output *) data;
 	struct timespec ts;
 	uint32_t flags = WP_PRESENTATION_FEEDBACK_KIND_VSYNC |
@@ -910,21 +916,29 @@ page_flip_handler(int fd, unsigned int frame,
 		drm_output_release_fb(output, output->current);
 		output->current = output->next;
 		output->next = NULL;
+    weston_log("page_flip_handler2");
 	}
 
 	output->page_flip_pending = 0;
 
 	if (output->destroy_pending)
+    {
 		drm_output_destroy(&output->base);
+    weston_log("page_flip_handler3");
+    }
 	else if (!output->vblank_pending) {
 		ts.tv_sec = sec;
 		ts.tv_nsec = usec * 1000;
 		weston_output_finish_frame(&output->base, &ts, flags);
 
+            weston_log("page_flip_handler4");
 		/* We can't call this from frame_notify, because the output's
 		 * repaint needed flag is cleared just after that */
 		if (output->recorder)
-			weston_output_schedule_repaint(&output->base);
+        {
+            weston_output_schedule_repaint(&output->base);
+            weston_log("page_flip_handler5");
+        }
 	}
 }
 
@@ -968,6 +982,7 @@ static struct weston_plane *
 drm_output_prepare_overlay_view(struct drm_output *output,
 				struct weston_view *ev)
 {
+    weston_log("drm_output_prepare_overlay_view");
 	struct weston_compositor *ec = output->base.compositor;
 	struct drm_backend *b = (struct drm_backend *)ec->backend;
 	struct weston_buffer_viewport *viewport = &ev->surface->buffer_viewport;
@@ -1141,6 +1156,7 @@ static struct weston_plane *
 drm_output_prepare_cursor_view(struct drm_output *output,
 			       struct weston_view *ev)
 {
+    weston_log("drm_output_prepare_cursor_view");
 	struct drm_backend *b =
 		(struct drm_backend *)output->base.compositor->backend;
 	struct weston_buffer_viewport *viewport = &ev->surface->buffer_viewport;
@@ -1275,6 +1291,7 @@ drm_output_set_cursor(struct drm_output *output)
 static void
 drm_assign_planes(struct weston_output *output_base)
 {
+        weston_log("drm_assign_planes");
 	struct drm_backend *b =
 		(struct drm_backend *)output_base->compositor->backend;
 	struct drm_output *output = (struct drm_output *)output_base;
