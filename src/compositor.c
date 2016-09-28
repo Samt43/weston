@@ -2665,7 +2665,6 @@ weston_output_schedule_repaint(struct weston_output *output)
 	if (output->repaint_scheduled)
     {
                         weston_log("THE END2\n");
-		return;
     }
 
 	wl_event_loop_add_idle(loop, idle_repaint, output);
