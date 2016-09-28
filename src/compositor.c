@@ -2652,7 +2652,10 @@ weston_output_schedule_repaint(struct weston_output *output)
 
 	if (compositor->state == WESTON_COMPOSITOR_SLEEPING ||
 	    compositor->state == WESTON_COMPOSITOR_OFFSCREEN)
+    {
+                weston_log("THE END\n");
 		return;
+    }
 
 	if (!output->repaint_needed)
 		TL_POINT("core_repaint_req", TLP_OUTPUT(output), TLP_END);
@@ -2660,11 +2663,15 @@ weston_output_schedule_repaint(struct weston_output *output)
 	loop = wl_display_get_event_loop(compositor->wl_display);
 	output->repaint_needed = 1;
 	if (output->repaint_scheduled)
+    {
+                        weston_log("THE END2\n");
 		return;
+    }
 
 	wl_event_loop_add_idle(loop, idle_repaint, output);
 	output->repaint_scheduled = 1;
 	TL_POINT("core_repaint_enter_loop", TLP_OUTPUT(output), TLP_END);
+                    weston_log("THE END3\n");
 }
 
 WL_EXPORT void
