@@ -2563,7 +2563,6 @@ weston_output_schedule_repaint(struct weston_output *output)
 	output->repaint_needed = 1;
 	if (output->repaint_scheduled)
     {
-                        weston_log("THE END2\n");
                         weston_output_schedule_repaint_reset(output); 
 		return;
     }
